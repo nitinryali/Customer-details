@@ -175,6 +175,7 @@ Management FLASK APP {% endblock %} {% block body %}
                   action="{{ url_for('insert_customer') }}"
                   method="post"
                   enctype="multipart/form-data"
+                  id="insertForm"
                   onsubmit="submitForm(); return false;"
                 >
                   <div class="form-group">
@@ -266,10 +267,14 @@ Management FLASK APP {% endblock %} {% block body %}
     document.getElementById("update_ip_address").value = ip_address;
   }
 
-  function submitForm() {
-    var form = document.querySelector("form");
+function submitForm() {
+    var form = document.querySelector("#insertForm"); // Change the selector to target the insert form
     var formData = new FormData(form);
-    var imageInput = document.querySelector('input[type="file"]');
+    console.log("Name:", formData.get("name"));
+    console.log("Mobile:", formData.get("mobile"));
+    console.log("Area:", formData.get("area"));
+    console.log("IP Address:", formData.get("ip_address"));    
+    var imageInput = document.querySelector('#insertForm input[type="file"]'); // Specify the input within the insert form
     var imageFile = imageInput.files[0];
     formData.append("image", imageFile);
     fetch("/insert_customer", {
@@ -280,7 +285,7 @@ Management FLASK APP {% endblock %} {% block body %}
       .then((data) => {
         if (data.success) {
           $("#myModal").modal("hide");
-          location.reload(true);
+          // location.reload(true);
         }
       })
       .catch((error) => console.error("Error:", error));
@@ -289,8 +294,6 @@ Management FLASK APP {% endblock %} {% block body %}
   function submitUpdateForm() {
     var form = document.querySelector("form");
     var formData = new FormData(form);
-
-    // Handle image file
     var imageInput = document.querySelector('input[type="file"]');
     var imageFile = imageInput.files[0];
     formData.append("image", imageFile);
