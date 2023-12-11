@@ -80,7 +80,7 @@ def insert_customer():
 
         if result.inserted_id:
              flash("Customer inserted successfully.")
-             return redirect(url_for('index'))       
+             return jsonify({'success': True, 'message': 'Customer updated successfully'})        
         else:
             return jsonify({'success': False, 'message': 'Failed to insert customer'}), 500
     
