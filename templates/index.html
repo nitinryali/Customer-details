@@ -1,0 +1,317 @@
+{% extends 'base.html' %} {% include 'header.html' %} {% block title %} Customer
+Management FLASK APP {% endblock %} {% block body %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="jumbotron p-3">
+        <h2>
+          Manage <b>Customers</b>
+          <button
+            type="button"
+            class="btn btn-success float-right"
+            data-toggle="modal"
+            data-target="#mymodal"
+          >
+            Add New Customer
+          </button>
+        </h2>
+
+        {% with messages = get_flashed_messages() %} {% if messages %} {% for
+        message in messages %}
+        <div class="alert alert-success alert-dismissable" role="alert">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="close"
+          >
+            <span aria-hidden="true">x</span>
+          </button>
+          {{ message }}
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <table class="table table-hover table-dark">
+          <tr>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Area</th>
+            <th>IP Address</th>
+            <th>Image</th>
+            <th>Action</th>
+          </tr>
+
+          {% for row in customers %}
+          <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.mobile }}</td>
+            <td>{{ row.area }}</td>
+            <td>{{ row.ip_address }}</td>
+            <td>
+              <img
+                src="{{ row.image }}"
+                alt="Customer Image"
+                style="max-width: 100px; max-height: 100px"
+              />
+            </td>
+
+            <td>
+              <a
+                href="{{ url_for('update_customer', customer_id=row._id) }}"
+                class="btn btn-warning btn-xs"
+                data-toggle="modal"
+                data-target="#updateModal"
+                data-customer-id="{{ row._id }}"
+                onclick="prepareUpdateForm('{{ row._id }}', '{{ row.name }}', '{{ row.mobile }}', '{{ row.area }}', '{{ row.ip_address }}')"
+                >Edit</a
+              >
+              <a
+                href="{{ url_for('delete_customer', customer_id=row._id) }}"
+                class="btn btn-danger btn-xs"
+                onclick="return confirm('Are you sure you want to delete?')"
+                >Delete</a
+              >
+              <input type="hidden" name="customer_id" id="customer_id" />
+            </td>
+          </tr>
+
+          <div id="updateModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Update Customer</h4>
+                </div>
+
+                <div class="modal-body">
+                  <form
+                    action="{{ url_for('update_customer', customer_id=row._id) }}"
+                    method="put"
+                    enctype="multipart/form-data"
+                    onsubmit="submitUpdateForm(); return false;"
+                  >
+                    <div class="form-group">
+                      <label>Name:</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="name"
+                        id="update_name"
+                        required="1"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label>Mobile:</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="mobile"
+                        id="update_mobile"
+                        required="1"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label>Area:</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="area"
+                        id="update_area"
+                        required="1"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label>IP Address:</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        name="ip_address"
+                        id="update_ip_address"
+                        required="1"
+                      />
+                    </div>
+
+                    <div class="form-group">
+                      <label>Image:</label>
+                      <input type="file" name="image" accept="image/*" />
+                    </div>
+
+                    <div class="form-group">
+                      <button class="btn btn-primary" type="submit">
+                        Update Customer
+                      </button>
+                    </div>
+
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% endfor %}
+        </table>
+
+        <div id="mymodal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Add Customer</h4>
+              </div>
+
+              <div class="modal-body">
+                <form
+                  action="{{ url_for('insert_customer') }}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  onsubmit="submitForm(); return false;"
+                >
+                  <div class="form-group">
+                    <label>Name:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="name"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Mobile:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="mobile"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Area:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="area"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>IP Address:</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      name="ip_address"
+                      id="ip_address"
+                      required="1"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label>Image:</label>
+                    <input type="file" name="image" accept="image/*" />
+                  </div>
+
+                  <div class="form-group">
+                    <button class="btn btn-primary" type="submit">
+                      Add Customer
+                    </button>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.addEventListener("DOMContentLoaded", (event) => {
+    fetch("https://api.ipify.org?format=json")
+      .then((response) => response.json())
+      .then((data) => {
+        document.getElementById("ip_address").value = data.ip;
+      })
+      .catch((error) => console.error("Error fetching IP address:", error));
+  });
+
+  function prepareUpdateForm(customerID, name, mobile, area, ip_address) {
+    document.getElementById("customer_id").value = customerID;
+    document.getElementById("update_name").value = name;
+    document.getElementById("update_mobile").value = mobile;
+    document.getElementById("update_area").value = area;
+    document.getElementById("update_ip_address").value = ip_address;
+  }
+
+  function submitForm() {
+    var form = document.querySelector("form");
+    var formData = new FormData(form);
+    var imageInput = document.querySelector('input[type="file"]');
+    var imageFile = imageInput.files[0];
+    formData.append("image", imageFile);
+    fetch("/insert_customer", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          $("#myModal").modal("hide");
+          location.reload(true);
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
+  function submitUpdateForm() {
+    var form = document.querySelector("form");
+    var formData = new FormData(form);
+
+    // Handle image file
+    var imageInput = document.querySelector('input[type="file"]');
+    var imageFile = imageInput.files[0];
+    formData.append("image", imageFile);
+
+    var customerID = document.getElementById("customer_id").value;
+
+    fetch("/update_customer/" + customerID, {
+      method: "PUT",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+
+        if (data.success) {
+          $("#updateModal").modal("hide");
+          location.reload(true);
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+</script>
+
+{% endblock %}
